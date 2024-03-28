@@ -107,14 +107,16 @@ echo "########### : Starting assignment2 script : ###########"
 echo "*********** : Installing required packages : ***********"
    
 if ! packageinstalled "apache2"; then
-    sudo apt update && sudo apt install -y apache2 >/dev/null 2>&1
+    sudo apt update >/dev/null && sudo apt install -y apache2 >/dev/null 2>&1
+    echo "apache2 installed"
 fi
 
 if ! packageinstalled "squid"; then
-    sudo apt update && sudo apt install -y squid >/dev/null 2>&1
+    sudo apt update >/dev/null && sudo apt install -y squid >/dev/null 2>&1
+    echo "squid installed"
 fi   
 
-echo "Package is installed"
+
 
    
 # Configuring netplan
@@ -151,7 +153,7 @@ echo "*********** : Adding sudo privilage and  Authorization key to user dennis 
 
 key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4rT3vTt99Ox5kndS4HmgTrKBT8SKzhK4rhGkEVGlCI student@generic-vm"
 if ! cat /home/dennis/.ssh/authorized_keys | grep -qe "$key"; then
-    sudo -u dennis echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4rT3vTt99Ox5kndS4HmgTrKBT8SKzhK4rhGkEVGlCI student@generic-vm" | sudo -u dennis tee -a /home/dennis/.ssh/authorized_keys    
+    sudo -u dennis echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4rT3vTt99Ox5kndS4HmgTrKBT8SKzhK4rhGkEVGlCI student@generic-vm" | sudo -u dennis tee -a /home/dennis/.ssh/authorized_keys >/dev/null   
 else
     echo "The key is already added" 
 fi   
