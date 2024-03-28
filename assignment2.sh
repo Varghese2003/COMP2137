@@ -37,6 +37,8 @@ sudoaccess() {
 # Function to configure netplan
 configurenetplan() {
     local interfacename=$(ip a | grep -w "inet" | grep -e 192.168. | awk '{print $NF}')
+    local newip=$(ip a | grep -w inet | grep -e 192.168 | awk '{print $2}' | sed "s/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)/\1.\2.\3.21/")
+    local gateip=$(ip route show default | awk '/via/ {print $3}')
     local filename=$(sudo ls /etc/netplan/ | grep -e .yaml)
     local netplan_file="/etc/netplan/$filename"
     if [[ -f "$netplan_file" ]]; then
@@ -47,12 +49,12 @@ network:
     version: 2
     ethernets:
         $interfacename:
-            addresses: [192.168.16.21/24]
+            addresses: [$newip]
             routes:
               - to: default
-                via: 192.168.16.2
+                via: $gateip
             nameservers:
-               addresses: [192.168.16.2]
+               addresses: [$gateip]
                search: [home.arpa, localdomain]
 
 EOF
@@ -69,13 +71,14 @@ EOF
 # Function to update /etc/hosts file
 hostsfile() {
     local oldip=$(sudo grep -e "192.168." /etc/hosts  | awk '{print $1}')
+    local hostip=$(ip a | grep -w inet | grep -e 192.168 | awk '{print $2}' | sed "s/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)/\1.\2.\3.21/" | cut -d '/' -f 1)
     if sudo grep -e "192.168." /etc/hosts; then >/dev/null
         echo "Removing old entry from /etc/hosts"
         sudo sed -i "/$oldip/d" /etc/hosts
     fi
-    if ! sudo grep -q "192.168.16.21" /etc/hosts; then
+    if ! sudo grep -q "$hostip" /etc/hosts; then
         echo "Adding new entry to /etc/hosts"
-        echo "192.168.16.21 server1" | sudo tee -a /etc/hosts >/dev/null
+        echo "$hostip server1" | sudo tee -a /etc/hosts >/dev/null
     fi
 }    
      
