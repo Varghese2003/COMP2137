@@ -107,11 +107,11 @@ echo "########### : Starting assignment2 script : ###########"
 echo "*********** : Installing required packages : ***********"
    
 if ! packageinstalled "apache2"; then
-    sudo apt update && sudo apt install -y apache2
+    sudo apt update && sudo apt install -y apache2 >/dev/null 2>&1
 fi
 
 if ! packageinstalled "squid"; then
-    sudo apt update && sudo apt install -y squid
+    sudo apt update && sudo apt install -y squid >/dev/null 2>&1
 fi   
 
 echo "Package is installed"
